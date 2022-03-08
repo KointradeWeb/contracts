@@ -53,14 +53,14 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
 
     // Maximum emission rate : ASNTPerBlock can't be more than 50 per sec
     uint256 public constant MAX_EMISSION_RATE = 50 ether;
-    // Max harvest interval: 14 days
-    uint256 public constant MAXIMUM_HARVEST_INTERVAL = 14 days;    
+    // Max harvest interval: 3 days
+    uint256 public constant MAXIMUM_HARVEST_INTERVAL = 5 days;    
     // Max harvest fee interval: 10 days.
-    uint256 public constant MAXIMUM_HARVESTFEE_INTERVAL = 10 days; 
+    uint256 public constant MAXIMUM_HARVESTFEE_INTERVAL = 5 days; 
     // Max harvest fee : 10% / Harvest fee applied ONLY on rewards, never on deposited assets
     uint256 public constant MAXIMUM_HARVEST_FEE_RATE = 0.1 ether; // 10%
     // Maximum deposit fee rate: 10%
-    uint256 public constant MAXIMUM_DEPOSIT_FEE_RATE = 0.1 ether; // 10%
+    uint256 public constant MAXIMUM_DEPOSIT_FEE_RATE = 0.05 ether; // 5%
     // Maximum percentage of pool rewards that goto the share address: 10%
     uint16 public constant MAXIMUM_SHARE_RATE = 100;
     // Maximum number of rewarders per pool
@@ -278,7 +278,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Get fee reduction from vip contract
-    function getFarmsDepFeeReduction(address _user) public view returns(uint _farmDepFeeReduction) { //TODO need test with whitelist contract
+    function getFarmsDepFeeReduction(address _user) public view returns(uint _farmDepFeeReduction) {
         if (address(vip) != address(0)) {
             return vip.getFarmsDepFeeReduction(_user);
         }
@@ -700,7 +700,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update vip contract address
-    function setVIP(IAssentVIP _vip) public onlyOwner { //TODO need test
+    function setVIP(IAssentVIP _vip) public onlyOwner {
         require (_vip.isVIP(), "Not a vip contract");
         require (_vip.getFarmsDepFeeReduction(address(this)) == 0, "getFarmsDepFeeReduction wrong answer");
         emit VIPUpdated(vip, _vip);

@@ -75,6 +75,5 @@ contract ASNTToken is
     ) internal override whenNotPaused {
         super._beforeTokenTransfer(from, to, amount);
     }
-
-    //TODO need a max supply and be handled into masterchef and bond management
+    
 }
