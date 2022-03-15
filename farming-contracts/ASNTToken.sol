@@ -36,18 +36,13 @@ contract ASNTToken is
         _setupRole(RESCUER_ROLE, msg.sender);
     }
 
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
+    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
         require(
             amount + totalSupply() <= MAX_TOTAL_SUPPLY,
             "Cant mint more than max supply"
         );
         _mint(to, amount);
     }
-
-    function burn(address account, uint256 amount) public returns (bool) {
-        _burn(account, amount);
-        return true;
-    }    
 
     function maxSupply() external pure returns (uint256) {
         return MAX_TOTAL_SUPPLY;
@@ -60,11 +55,11 @@ contract ASNTToken is
         token.transfer(msg.sender, value);
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 

@@ -32,7 +32,7 @@ contract AssentReferral is IReferral, Ownable {
         _;
     }
 
-    function recordReferral(address _user, address _referrer) public override onlyOperator {
+    function recordReferral(address _user, address _referrer) external override onlyOperator {
         if (_user != address(0)
             && _referrer != address(0)
             && _user != _referrer
@@ -44,7 +44,7 @@ contract AssentReferral is IReferral, Ownable {
         }
     }
 
-    function recordReferralCommission(address _referrer, uint256 _commission) public override onlyOperator {
+    function recordReferralCommission(address _referrer, uint256 _commission) external override onlyOperator {
         if (_referrer != address(0) && _commission > 0) {
             totalReferralCommissions[_referrer] += _commission;
             emit ReferralCommissionRecorded(_referrer, _commission);
@@ -52,7 +52,7 @@ contract AssentReferral is IReferral, Ownable {
     }
 
     // Get the referrer address that referred the user
-    function getReferrer(address _user) public override view returns (address) {
+    function getReferrer(address _user) external override view returns (address) {
         return referrers[_user];
     }
 

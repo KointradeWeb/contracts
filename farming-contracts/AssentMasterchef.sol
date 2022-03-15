@@ -359,7 +359,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Deposit tokens for ASNT allocation.
-    function deposit(uint256 _pid, uint256 _amount, address _referrer) public nonReentrant {
+    function deposit(uint256 _pid, uint256 _amount, address _referrer) external nonReentrant {
         _deposit(_pid, _amount, _referrer);
     }
 
@@ -411,7 +411,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     //withdraw tokens
-    function withdraw(uint256 _pid, uint256 _amount) public nonReentrant validatePoolByPid(_pid) {
+    function withdraw(uint256 _pid, uint256 _amount) external nonReentrant validatePoolByPid(_pid) {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -447,7 +447,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Withdraw without caring about rewards. EMERGENCY ONLY.
-    function emergencyWithdraw(uint256 _pid) public nonReentrant {
+    function emergencyWithdraw(uint256 _pid) external nonReentrant {
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
         uint256 amount = user.amount;
@@ -533,7 +533,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Function to harvest many pools in a single transaction
-    function harvestMany(uint256[] calldata _pids, address _referrer) public nonReentrant {
+    function harvestMany(uint256[] calldata _pids, address _referrer) external nonReentrant {
         require(_pids.length <= 30, "harvest many: too many pool ids");
         for (uint256 index = 0; index < _pids.length; ++index) {
             _deposit(_pids[index], 0, _referrer);
@@ -559,7 +559,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
 
     // Add a new lp to the pool. Can only be called by the owner.
     // Can add multiple pool with same lp token without messing up rewards, because each pool's balance is tracked using its own totalLp
-    function add(uint256 _allocPoint, IERC20 _lpToken, uint256 _depositFeeRate, uint256 _harvestInterval, uint256 _harvestFeeInterval, uint256 _harvestFeeRate, IMultipleRewards[] calldata _rewarders) public onlyOwner {
+    function add(uint256 _allocPoint, IERC20 _lpToken, uint256 _depositFeeRate, uint256 _harvestInterval, uint256 _harvestFeeInterval, uint256 _harvestFeeRate, IMultipleRewards[] calldata _rewarders) external onlyOwner {
         require(_rewarders.length <= MAXIMUM_REWARDERS, "add: too many rewarders");
         require(_harvestFeeRate <= MAXIMUM_HARVEST_FEE_RATE, "add: harvest fee too high");      
         require(_harvestFeeInterval <= MAXIMUM_HARVESTFEE_INTERVAL, "add: invalid harvest fee interval");
@@ -597,7 +597,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update the given pool's ASNT parameters. Can only be called by the owner.
-    function set(uint256 _pid, uint256 _allocPoint, uint256 _depositFeeRate, uint256 _harvestInterval, uint256 _harvestFeeInterval, uint256 _harvestFeeRate, IMultipleRewards[] calldata _rewarders) public onlyOwner validatePoolByPid(_pid) {
+    function set(uint256 _pid, uint256 _allocPoint, uint256 _depositFeeRate, uint256 _harvestInterval, uint256 _harvestFeeInterval, uint256 _harvestFeeRate, IMultipleRewards[] calldata _rewarders) external onlyOwner validatePoolByPid(_pid) {
         require(_rewarders.length <= MAXIMUM_REWARDERS, "set: too many rewarders");
         require(_harvestFeeRate <= MAXIMUM_HARVEST_FEE_RATE, "set: harvest fee too high");      
         require(_harvestFeeInterval <= MAXIMUM_HARVESTFEE_INTERVAL, "set: invalid harvest fee interval");
@@ -624,7 +624,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update pool allocation point
-    function updateAllocPoint(uint256 _pid, uint256 _allocPoint) public onlyOwner {
+    function updateAllocPoint(uint256 _pid, uint256 _allocPoint) external onlyOwner {
         _massUpdatePools();
         emit AllocPointsUpdated(msg.sender,poolInfo[_pid].allocPoint,_allocPoint);
         totalAllocPoint = totalAllocPoint - poolInfo[_pid].allocPoint + _allocPoint;
@@ -632,7 +632,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update emission rate
-    function updateEmissionRate(uint256 _ASNTPerSec) public onlyOwner {
+    function updateEmissionRate(uint256 _ASNTPerSec) external onlyOwner {
 		require(_ASNTPerSec <= MAX_EMISSION_RATE, "Emission > max emission rate");
         _massUpdatePools();
         emit EmissionRateUpdated(msg.sender, ASNTPerSec, _ASNTPerSec);
@@ -640,7 +640,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Set farming start now, can call only if farming not started
-    function startFarmingNow() public onlyOwner {
+    function startFarmingNow() external onlyOwner {
         require(block.timestamp < startTimestamp, "farm already started");
         uint256 length = poolInfo.length;
         for (uint256 pid = 0; pid < length; ++pid) {
@@ -651,7 +651,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Set farming start at fixed time, can call only if farming not started
-    function startFarmingAtTime(uint _startTimestamp) public onlyOwner {
+    function startFarmingAtTime(uint _startTimestamp) external onlyOwner {
         require(block.timestamp < startTimestamp, "farm already started");
 
         uint256 length = poolInfo.length;
@@ -663,13 +663,13 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }       
 	
     // Update the ASNT referral contract address by the owner
-    function setASNTReferral(IReferral _ASNTReferral) public onlyOwner {
+    function setASNTReferral(IReferral _ASNTReferral) external onlyOwner {
         ASNTReferral = _ASNTReferral;
         emit ASNTReferralUpdated(msg.sender, _ASNTReferral);
     }
 
     // Update referral commission rate by the owner
-    function setReferralCommissionRate(uint16 _referralCommissionRate) public onlyOwner {
+    function setReferralCommissionRate(uint16 _referralCommissionRate) external onlyOwner {
         // Max referral commission rate: 10%.
         require(_referralCommissionRate <= 1000, "setReferralCommissionRate: invalid referral commission rate basis points");
         emit ReferralRateUpdated(msg.sender, referralCommissionRate, _referralCommissionRate);
@@ -677,7 +677,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update ASNTShare address
-    function setASNTShareAddress(address _ASNTShareAddress) public {
+    function setASNTShareAddress(address _ASNTShareAddress) external {
         require(msg.sender == ASNTShareAddress, "setASNTShareAddress: FORBIDDEN");
         require(_ASNTShareAddress != address(0), "setASNTShareAddress: ZERO");
         ASNTShareAddress = _ASNTShareAddress;
@@ -685,14 +685,14 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update ASNT Share percentage
-    function setASNTSharePercent(uint256 _newASNTSharePercent) public onlyOwner {
+    function setASNTSharePercent(uint256 _newASNTSharePercent) external onlyOwner {
         require(_newASNTSharePercent <= MAXIMUM_SHARE_RATE, "invalid percent value");
         emit SetASNTSharePercent(ASNTSharePercent, _newASNTSharePercent);
         ASNTSharePercent = _newASNTSharePercent;
     }
 
     // Update fee address by the previous fee address
-    function setFeeAddress(address _feeAddress) public {
+    function setFeeAddress(address _feeAddress) external {
         require(msg.sender == feeAddress, "setFeeAddress: FORBIDDEN");
         require(_feeAddress != address(0), "setFeeAddress: ZERO");
         feeAddress = _feeAddress;
@@ -700,7 +700,7 @@ contract AssentMasterchef is Ownable, ReentrancyGuard {
     }
 
     // Update vip contract address
-    function setVIP(IAssentVIP _vip) public onlyOwner {
+    function setVIP(IAssentVIP _vip) external onlyOwner {
         require (_vip.isVIP(), "Not a vip contract");
         require (_vip.getFarmsDepFeeReduction(address(this)) == 0, "getFarmsDepFeeReduction wrong answer");
         emit VIPUpdated(vip, _vip);
